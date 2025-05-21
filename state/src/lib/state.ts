@@ -136,6 +136,23 @@ export class Othello {
 
     }
 
+    // capture the disks for a given position and player
+    public captureDisks(pos: Position, player: Square): void {
+
+        // get the captures for this move
+        const captures = this.getCaptures(pos, player);
+
+        // if we have no captures, we can't make a move
+        if (captures.length === 0) {
+            return;
+        }
+
+        // place our piece and flip the captured pieces
+        this.board[pos.row][pos.col] = player;
+        for (const capture of captures) {
+            this.board[capture.row][capture.col] = player;
+        }
+    }
 
     // helper to check if the pos is within bounds
     private withinBounds(pos: Position): boolean {

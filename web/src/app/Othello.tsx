@@ -42,6 +42,9 @@ function OthelloBoard() {
     const scoreBlack = game?.getScore(Square.BLACK)
     const scoreWhite = game?.getScore(Square.WHITE)
     
+    // capture a move to test the capture logic
+    game?.captureDisks({row: 5, col: 2}, Square.BLACK)
+    
     return (
         <div>
             <ul>
