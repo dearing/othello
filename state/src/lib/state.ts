@@ -199,4 +199,8 @@ export class Othello {
         return pos.row >= 0 && pos.row < this.boardSize && pos.col >= 0 && pos.col < this.boardSize
     }
 
+    public shouldSkipTurn(): boolean {
+        return this.getValidMoves(this.currentPlayer).length === 0 && 
+               this.getValidMoves(this.currentPlayer === Square.BLACK ? Square.WHITE : Square.BLACK).length > 0;
+    }
 }

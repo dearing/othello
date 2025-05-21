@@ -32,7 +32,13 @@ function OthelloBoard() {
 
             <div>
                 <h2>{game?.getStatus()}</h2>
-                <table>
+                <table style={{ 
+                    backgroundColor: '#1b5e20', 
+                    borderSpacing: '2px', 
+                    padding: '8px',
+                    border: '8px solid #2e7d32',
+                    borderRadius: '4px',
+                }}>
                     <tbody>
                         {game?.getBoard().map((row, rowIndex) => (
                             <tr key={rowIndex}>
@@ -47,9 +53,11 @@ function OthelloBoard() {
                                                 width: '50px',
                                                 height: '50px',
                                                 textAlign: 'center',
-                                                border: '1px solid black',
-                                                background: isValidMove ? '#cfc' : undefined,
-                                                cursor: isValidMove ? 'pointer' : 'default'
+                                                backgroundColor: '#2e7d32',
+                                                cursor: isValidMove ? 'pointer' : 'default',
+                                                position: 'relative',
+                                                border: '2px solid #1b5e20', // Add cell borders
+                                                borderRadius: '2px',         // Slightly round the cell corners
                                             }}
                                             onClick={() => {
                                                 if (isValidMove && game) {
@@ -61,11 +69,40 @@ function OthelloBoard() {
                                                     // Make the move
                                                     updatedGame.captureDisks({ row: rowIndex, col: colIndex }, updatedGame.currentPlayer);
                                                     updatedGame.togglePlayer();
+
+                                                    // Check if next player needs to skip
+                                                    if (updatedGame.shouldSkipTurn()) {
+                                                        updatedGame.togglePlayer();
+                                                    }
+
                                                     setGame(updatedGame);
                                                 }
                                             }}
                                         >
-                                            {square === Square.BLACK ? 'B' : square === Square.WHITE ? 'W' : ''}
+                                            {(square === Square.BLACK || square === Square.WHITE) && (
+                                                <div style={{
+                                                    width: '40px',
+                                                    height: '40px',
+                                                    borderRadius: '50%',
+                                                    backgroundColor: square === Square.BLACK ? '#000' : '#fff',
+                                                    position: 'absolute',
+                                                    top: '5px',
+                                                    left: '5px',
+                                                    boxShadow: '2px 2px 2px rgba(0,0,0,0.2)'
+                                                }} />
+                                            )}
+                                            {isValidMove && (
+                                                <div style={{
+                                                    width: '20px',
+                                                    height: '20px',
+                                                    borderRadius: '50%',
+                                                    backgroundColor: game.currentPlayer === Square.BLACK ? '#000' : '#fff',
+                                                    opacity: 0.4,
+                                                    position: 'absolute',
+                                                    top: '15px',
+                                                    left: '15px'
+                                                }} />
+                                            )}
                                         </td>
                                     );
                                 })}
