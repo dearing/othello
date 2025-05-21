@@ -136,14 +136,6 @@ export class Othello {
 
     }
 
-    // TODO: return if valid move
-    public isValidMove(pos: Position): boolean {
-        // short out of outside of bounds
-        if (this.withinBounds(pos)) {
-            return false
-        }
-        return false
-    }
 
     // helper to check if the pos is within bounds
     private withinBounds(pos: Position): boolean {
