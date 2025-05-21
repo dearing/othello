@@ -29,6 +29,7 @@ export interface Position {
 
 export class Othello {
 
+    public currentPlayer: Square = Square.BLACK // start with black
     private board: Square[][] // we'll do this as a 2D array
     constructor(
         // Othello variant played on an 8x8 board
@@ -42,6 +43,15 @@ export class Othello {
         this.board[mid - 1][mid] = Square.BLACK;
         this.board[mid][mid] = Square.WHITE;
         this.board[mid][mid - 1] = Square.WHITE;
+    }
+
+    // helper to swap players
+    public togglePlayer() {
+        this.currentPlayer = this.currentPlayer === Square.BLACK ? Square.WHITE : Square.BLACK;
+    }
+
+    public getCurrentPlayer(): string {
+        return this.currentPlayer === Square.BLACK ? 'Black' : 'White';
     }
 
     // accept a square type and return the sum of counts

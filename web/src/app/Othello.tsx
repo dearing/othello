@@ -41,18 +41,18 @@ function OthelloBoard() {
     const boardSize = game?.boardSize
     const scoreBlack = game?.getScore(Square.BLACK)
     const scoreWhite = game?.getScore(Square.WHITE)
-
+    
     return (
         <div>
-            {/* <GameStatus size={boardSize} currentPlayer={Square.BLACK} blackCount={scoreBlack} whiteCount={scoreWhite}/> */}
             <ul>
                 <li>boardSize: {boardSize}</li>
                 <li>scoreBlack: {scoreBlack}</li>
                 <li>scoreWhite: {scoreWhite}</li>
-                <li>validMoves: {game?.getValidMoves(Square.BLACK).length}</li>
+                <li>board: {JSON.stringify(game?.getBoard())}</li>
+                <li>{game?.getCurrentPlayer()} validMoves: {JSON.stringify(game?.getValidMoves(game?.currentPlayer))}</li>
             </ul>
         </div>
     )
 }
 
-export default OthelloBoard 
+export default OthelloBoard;
