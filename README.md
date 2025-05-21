@@ -1,108 +1,41 @@
 # Othello
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+Simple Othello SPA with terraform as a demonstration and sample.
 
-✨ Your new, shiny [Nx workspace](https://nx.dev) is ready ✨.
+## overview
 
-[Learn more about this workspace setup and its capabilities](https://nx.dev/getting-started/tutorials/npm-workspaces-tutorial?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
+The project calls for a SPA application that play Othello in the browser. However the over time it could expand into hosting state within a backend as a game manager, have differing sized Othello boards or even AI of various ratings play against a player in time.
 
-## Run tasks
+## developer notes
 
-To run tasks with Nx use:
+For this to work, I decided to start the project as a monorepo of sorts using NX for management. From here we start with a single package on the root called `state` (poorly named) to handle the game logic like setting up a board and counting capturing moves. From there we add a react web project that consumes this library directly, as for now it needs to run without a backend. This allows us to use the type definitions of our `Othello` class for future backend work and cleanly offload logic from the SPA unto any future projects. From there it is a matter of decorating the components for style and taste.
 
-```sh
-npx nx <target> <project-name>
-```
+## deployment
 
-For example:
+In the `terraform` directory, HCL is defined to deploy a cloudfront website with s3 as the origin. The contents of `dist/web` are then uploaded and *only* cloudfront is allowed to access those objects. Any future with backends could be served up most simply with container(s) for the backend and optionally frontend as well.
 
-```sh
-npx nx build myproject
-```
+## future improvements
 
-These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
+### frontend: difficulty
 
-[More about running tasks in the docs &raquo;](https://nx.dev/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+The library itself knows the status of the game by pre-validating and counting captures. This is used as an UI hint for 'clickable' disks for the user, this function could easily be disabled at the UI as a form of hint-mode toggle for difficulty sliders. Outside of also resizing the board - the game rules can't really be helped along much else for the user.
 
-## Versioning and releasing
+edit: it occurs to me that improving the UI to also show the value of a capture (in flips) could be helpful but the nature of Othello isn't always about scoring the most for a given round...
 
-To version and release the library use
+### backend: history
 
-```
-npx nx release
-```
+One could expand on the state of the board (plus player turn) as building array for history and game replays, this would need to be offloaded unto a database of some sort and that itself would then need to be keyed to be 'found' for the clients. Then a UX slider could be implemented or a hash that defines the game board size and move history as a url link.
 
-Pass `--dry-run` to see what would happen without actually releasing the library.
+### backend: computer opponents
 
-[Learn more about Nx release &raquo;](hhttps://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+Another fun use case for enhancement would be to implement an AI to play against the player. The classic way would be to spend compute effort building a tree of potential moves and evaluating the overall score and going with that. Difficulty on the computer opponent could then be adjusted by the breadth and depth of futures the opponent could work within.  Another idea is pre-baking models trained against themselves for various times and given ratings (ELO?) that could then be given personalities like "Iago" and "Cassio".
 
-## Add new projects
+## a note on AI
 
-While you could add new projects to your workspace manually, you might want to leverage [Nx plugins](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) and their [code generation](https://nx.dev/features/generate-code?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) feature.
+I used AI to doodle up the HTML (react components) mostly in the project along with some boilerplate here and there. The idea of using an array of directions for computing the capture search algo was inspired by me asking claude about overlaying a mask of valid moves. I was defaulting to using a long search list where it gave a 2d array to iterate over instead, much more elegant. I would think I would of eventually cleaned it up after the fact but we'll never know now.
 
-To install a new plugin you can use the `nx add` command. Here's an example of adding the React plugin:
-```sh
-npx nx add @nx/react
-```
+## TODO
 
-Use the plugin's generator to create new projects. For example, to create a new React app or library:
+There are `git grep TODO | wc -l` seven TODO and much more places to refactor, cleanup and smooth over the code but since this is meant to be homework and not a published app, I'm holding off to allow for talking points on thought process, pain points and improvements.
 
-```sh
-# Generate an app
-npx nx g @nx/react:app demo
-
-# Generate a library
-npx nx g @nx/react:lib some-lib
-```
-
-You can use `npx nx list` to get a list of installed plugins. Then, run `npx nx list <plugin-name>` to learn about more specific capabilities of a particular plugin. Alternatively, [install Nx Console](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) to browse plugins and generators in your IDE.
-
-[Learn more about Nx plugins &raquo;](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) | [Browse the plugin registry &raquo;](https://nx.dev/plugin-registry?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Set up CI!
-
-### Step 1
-
-To connect to Nx Cloud, run the following command:
-
-```sh
-npx nx connect
-```
-
-Connecting to Nx Cloud ensures a [fast and scalable CI](https://nx.dev/ci/intro/why-nx-cloud?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) pipeline. It includes features such as:
-
-- [Remote caching](https://nx.dev/ci/features/remote-cache?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task distribution across multiple machines](https://nx.dev/ci/features/distribute-task-execution?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Automated e2e test splitting](https://nx.dev/ci/features/split-e2e-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task flakiness detection and rerunning](https://nx.dev/ci/features/flaky-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-### Step 2
-
-Use the following command to configure a CI workflow for your workspace:
-
-```sh
-npx nx g ci-workflow
-```
-
-[Learn more about Nx on CI](https://nx.dev/ci/intro/ci-with-nx#ready-get-started-with-your-provider?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Install Nx Console
-
-Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
-
-[Install Nx Console &raquo;](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Useful links
-
-Learn more:
-
-- [Learn more about this workspace setup](https://nx.dev/getting-started/tutorials/npm-workspaces-tutorial?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects)
-- [Learn about Nx on CI](https://nx.dev/ci/intro/ci-with-nx?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Releasing Packages with Nx release](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [What are Nx plugins?](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-And join the Nx community:
-- [Discord](https://go.nx.dev/community)
-- [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [Our Youtube channel](https://www.youtube.com/@nxdevtools)
-- [Our blog](https://nx.dev/blog?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+Jacob Dearing
