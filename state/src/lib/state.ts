@@ -19,7 +19,16 @@ source: https://en.wikipedia.org/wiki/Reversi
 export enum Square {
     NONE = 0,
     BLACK = 1,
-    WHITE = 2
+    WHITE = 2,
+    VALID = 3
+}
+
+export enum GameStatus {
+    BLACK_TURN = 'Black turn',
+    WHITE_TURN = 'White turn',
+    BLACK_WINS = 'Black wins',
+    WHITE_WINS = 'White wins',
+    GAME_OVER = 'Game over'
 }
 
 export interface Position {
@@ -30,7 +39,7 @@ export interface Position {
 export class Othello {
 
     public currentPlayer: Square = Square.BLACK // start with black
-    private board: Square[][] // we'll do this as a 2D array
+    public board: Square[][] // we'll do this as a 2D array
     constructor(
         // Othello variant played on an 8x8 board
         readonly boardSize: number,
@@ -39,10 +48,10 @@ export class Othello {
             .fill(Square.NONE)
             .map(() => Array(this.boardSize).fill(Square.NONE))
         const mid = this.boardSize / 2; // as far as I know, othello games would always(?) be centered
-        this.board[mid - 1][mid - 1] = Square.BLACK;
+        this.board[mid - 1][mid - 1] = Square.WHITE;
         this.board[mid - 1][mid] = Square.BLACK;
         this.board[mid][mid] = Square.WHITE;
-        this.board[mid][mid - 1] = Square.WHITE;
+        this.board[mid][mid - 1] = Square.BLACK;
     }
 
     // helper to swap players
@@ -63,6 +72,33 @@ export class Othello {
     // this should be our way to get a copy out for consuming in a component
     public getBoard(): Square[][] {
         return this.board.map(row => [...row])
+    }
+
+    // TODO: game status should be known kind of state
+    // helper string representation of the game status
+    public getStatus(): string {
+        if (this.getScore(Square.BLACK) === 0) {
+            return GameStatus.WHITE_WINS;
+        }
+        if (this.getScore(Square.WHITE) === 0) {
+            return GameStatus.BLACK_WINS;
+        }
+
+        if (this.getValidMoves(Square.BLACK).length === 0 && 
+            this.getValidMoves(Square.WHITE).length === 0) {
+            const blackScore = this.getScore(Square.BLACK);
+            const whiteScore = this.getScore(Square.WHITE);
+            if (blackScore > whiteScore) {
+                return GameStatus.BLACK_WINS;
+            } else if (whiteScore > blackScore) {
+                return GameStatus.WHITE_WINS;
+            }
+            return GameStatus.GAME_OVER;
+        }
+
+        return this.currentPlayer === Square.BLACK ? 
+            GameStatus.BLACK_TURN : 
+            GameStatus.WHITE_TURN;
     }
 
     // TODO: return positions of valid moves
@@ -86,7 +122,11 @@ export class Othello {
     // We want to work backwards from a given position and square type, recording positions until we meet the same type again
     // NOTE: a capture list infers a capture check but the calling function would have to know remember the start position
     public getCaptures(pos: Position, player: Square): Position[] {
-        // TODO: gotta be a better way to represent a board in a null state than my ENUM approach
+        // short out if the position is already occupied
+        if (this.board[pos.row][pos.col] !== Square.NONE) {
+            return [];
+        }
+
         // if we are black, our opponent is white otherwise they must be black
         const opponent = player === Square.BLACK ? Square.WHITE : Square.BLACK
         let captures: Position[] = [];
@@ -126,7 +166,7 @@ export class Othello {
             }
 
             // finally, if we have a run and then hit ourselves we got a valid move!
-            if (running.length > 0 && this.board[row][col] === player) {
+            if (this.withinBounds({ row, col }) && running.length > 0 && this.board[row][col] === player) {
                 captures.push(...running)
             }
 
