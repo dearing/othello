@@ -24,7 +24,7 @@ terraform apply
 With terraform in charge of the AWS account resources, we can now move forward with deployments as needed. 
 
 
-```mermaid
+```
 digraph G {
   rankdir = "RL";
   node [shape = rect, fontname = "sans-serif"];
