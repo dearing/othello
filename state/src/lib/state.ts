@@ -55,5 +55,4 @@ export class Othello {
         return this.board.map(row => [...row])
     }
 
-
 }

@@ -1,10 +1,10 @@
-import NxWelcome from './nx-welcome';
+import Othello from './Othello';
 
 export function App() {
   return (
-    <div>
-      <NxWelcome title="web" />
-    </div>
+    <>
+      <Othello />
+    </>
   );
 }
 
